@@ -2,19 +2,23 @@ package com.shf.dsg.producer.fetcher;
 
 import com.netflix.graphql.dgs.DgsComponent;
 import com.netflix.graphql.dgs.DgsData;
+import com.netflix.graphql.dgs.DgsDataFetchingEnvironment;
 import com.netflix.graphql.dgs.DgsDataLoader;
 import com.shf.dsg.producer.entity.Director;
 import com.shf.dsg.producer.entity.Movie;
 import com.shf.dsg.producer.loader.DirectorsDataLoader;
 import com.shf.dsg.producer.service.DirectorService;
 import com.shf.dsg.producer.service.MovieService;
+import graphql.execution.DataFetcherResult;
 import graphql.schema.DataFetchingEnvironment;
 import org.dataloader.BatchLoader;
 import org.dataloader.DataLoader;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 /**
  * description :
@@ -40,7 +44,6 @@ public class MovieDataFetcher {
      * 获取movie集合，当前mock场景下movieService仅能获取id和name字段信息，无法获取director字段信息，其依赖{@link DirectorService}
      * <pre>{
      *   listMovies {
-     *     id
      *     name
      *     director {
      *       id
@@ -68,11 +71,89 @@ public class MovieDataFetcher {
      */
     @DgsData(parentType = "Movie", field = "director")
     public CompletableFuture<Director> director(DataFetchingEnvironment dfe) {
-        DataLoader<Integer, Director> dataLoader = dfe.getDataLoader("directorsWithTry");
+        DataLoader<Integer, Director> dataLoader = dfe.getDataLoader("directors");
         // 当前source为Movie对象
         Movie movie = dfe.getSource();
         // dataLoader收集所有movieId后执行{@link DirectorsDataLoader#load}批量获取集合数据
         return dataLoader.load(movie.getId());
     }
 
+
+    /**
+     * 此示例演示如何通过{@link DataFetcherResult}构造带有localContext上下文的嵌套结构查询场景。
+     *
+     * @return DataFetcherResult
+     */
+    @DgsData(parentType = "Query", field = "listMoviesWithLocalContext")
+    public DataFetcherResult<List<Movie>> listMoviesWithLocalContext() {
+        List<Movie> movies = movieService.listAll();
+        return DataFetcherResult.<List<Movie>>newResult()
+                .data(movies)
+                .localContext(movies.stream()
+                        .collect(Collectors.toMap(m -> m, Movie::getId)))
+                .build();
+    }
+
+    /**
+     * 当前获取{@link Director}方式即为one by one，是典型的N+1场景。
+     * 如下即通过LocalContext上下文获取{@link MovieDataFetcher#listMoviesWithLocalContext()}中传递的信息，并进行后续操作的示例。
+     *
+     * @param dfe
+     * @return
+     */
+    @DgsData(parentType = "Movie2", field = "director")
+    public CompletableFuture<Director> director(DgsDataFetchingEnvironment dfe) {
+        Map<Movie, Integer> movieMap = dfe.getLocalContext();
+        Movie movie = dfe.getSource();
+        return CompletableFuture.completedFuture(directorService.loadDirector(movieMap.get(movie)));
+    }
+
+    /**
+     * 通过{@link DataFetchingEnvironment#getSelectionSet()}定向获取投影字段，
+     * 然后批量获取对应数据集存储在localContext中达到preLoad效果，并在{@link MovieDataFetcher#director2(DgsDataFetchingEnvironment)}
+     * 中通过localContext获取preLoad的数据集填充对应投影字段。
+     * 优点：该方式可达到批量获取内嵌关联字段的效果；
+     * 缺点：不够灵活，属于定向处理；
+     * <pre>
+     *     {
+     *   listMoviesPreload {
+     *     name
+     *     director {
+     *       id
+     *       name
+     *     }
+     *   }
+     * }
+     * </pre>
+     *
+     * @param dfe DataFetchingEnvironment
+     * @return DataFetcherResult
+     */
+    @DgsData(parentType = "Query", field = "listMoviesPreload")
+    public DataFetcherResult<List<Movie>> listMovies(DataFetchingEnvironment dfe) {
+        List<Movie> movies = movieService.listAll();
+        if (dfe.getSelectionSet().contains("director")) {
+
+            Map<Integer, Director> movieIdRefDirector = directorService.loadDirectors();
+            return DataFetcherResult.<List<Movie>>newResult()
+                    .data(movies)
+                    .localContext(movieIdRefDirector)
+                    .build();
+        } else {
+            return DataFetcherResult.<List<Movie>>newResult().data(movies).build();
+        }
+    }
+
+    /**
+     * 通过{@link MovieDataFetcher#listMovies(DataFetchingEnvironment)} preLoad的数据集进行填充
+     *
+     * @param dfe DgsDataFetchingEnvironment
+     * @return Director
+     */
+    @DgsData(parentType = "Movie3", field = "director")
+    public CompletableFuture<Director> director2(DgsDataFetchingEnvironment dfe) {
+        Map<Integer, Director> movieIdRefDirector = dfe.getLocalContext();
+        Movie movie = dfe.getSource();
+        return CompletableFuture.completedFuture(movieIdRefDirector.get(movie.getId()));
+    }
 }

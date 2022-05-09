@@ -33,4 +33,8 @@ public class DirectorService {
     public Director loadDirector(Integer movieId) {
         return movieRefDirector.get(movieId);
     }
+
+    public Map<Integer, Director> loadDirectors() {
+        return movieRefDirector;
+    }
 }

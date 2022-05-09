@@ -8,6 +8,8 @@ type Query {
     withContext:String
     loadBook(id:Int):Book
     listMovies:[Movie]
+    listMoviesWithLocalContext:[Movie2]
+    listMoviesPreload:[Movie3]
     error:String
 }
 
@@ -38,7 +40,6 @@ input BookFilter{
 }
 
 type Movie  {
-    id:Int
     name:String
     director:Director
 }
@@ -47,6 +48,17 @@ type Director{
     id:String
     name:String
 }
+
+type Movie2  {
+    name:String
+    director:Director
+}
+
+type Movie3  {
+    name:String
+    director:Director
+}
+
 
 # @key(fields:"fieldA fieldB")
 type Post @key(fields: "id") @extends{
