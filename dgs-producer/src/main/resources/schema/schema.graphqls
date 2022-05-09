@@ -37,8 +37,7 @@ input BookFilter{
     title: String
 }
 
-# @key(fields:"fieldA fieldB")
-type Movie @key(fields: "id"){
+type Movie  {
     id:Int
     name:String
     director:Director
@@ -49,4 +48,13 @@ type Director{
     name:String
 }
 
+# @key(fields:"fieldA fieldB")
+type Post @key(fields: "id") @extends{
+    id:ID @external
+    name:String
+    reviews: [Review]
+}
 
+type Review {
+    starRating: Int
+}

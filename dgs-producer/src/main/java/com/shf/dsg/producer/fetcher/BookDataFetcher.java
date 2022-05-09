@@ -56,7 +56,8 @@ public class BookDataFetcher {
 
     /**
      * <pre>@DgsQuery same as @DgsData(parentType = "Query", field = "shows")</pre>
-     * If the field parameter is not set, the method name will be used as the field name
+     * - parentType：对应schema文件中的type；
+     * - field ： 对应schema文件中当前type下的指定filed；参数如果不设置，则默认采用当前方法名；
      *
      * <pre>
      *     {
@@ -280,9 +281,9 @@ public class BookDataFetcher {
      * }
      * </pre>
      *
-     * @param id
-     * @param dfe
-     * @return
+     * @param id  id
+     * @param dfe dfe
+     * @return Book
      */
     @DgsQuery
     public CompletableFuture<Book> loadBook(@InputArgument int id, DgsDataFetchingEnvironment dfe) {

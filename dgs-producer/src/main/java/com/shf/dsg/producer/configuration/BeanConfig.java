@@ -2,7 +2,10 @@ package com.shf.dsg.producer.configuration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import graphql.execution.instrumentation.Instrumentation;
+import graphql.execution.instrumentation.tracing.TracingInstrumentation;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -16,6 +19,7 @@ import org.springframework.context.annotation.Configuration;
 public class BeanConfig {
     /**
      * todo
+     *
      * @return
      */
     @Bean
@@ -26,5 +30,14 @@ public class BeanConfig {
         return objectMapper;
     }
 
-
+    /**
+     * 在响应体中将包含tracing相关的信息
+     *
+     * @return {@link Instrumentation}
+     */
+    @Bean
+    @ConditionalOnProperty(prefix = "graphql.tracing", name = "enabled", matchIfMissing = true)
+    public Instrumentation tracingInstrumentation() {
+        return new TracingInstrumentation();
+    }
 }
