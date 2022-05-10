@@ -1,7 +1,7 @@
 package com.shf.dsg.producer.loader;
 
 import com.netflix.graphql.dgs.DgsDataLoader;
-import com.shf.dsg.producer.entity.Book;
+import com.shf.common.entity.Book;
 import com.shf.dsg.producer.service.BookService;
 import lombok.extern.slf4j.Slf4j;
 import org.dataloader.MappedBatchLoader;

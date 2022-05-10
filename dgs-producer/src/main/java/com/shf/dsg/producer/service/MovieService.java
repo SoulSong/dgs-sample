@@ -1,6 +1,6 @@
 package com.shf.dsg.producer.service;
 
-import com.shf.dsg.producer.entity.Movie;
+import com.shf.common.entity.Movie;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;

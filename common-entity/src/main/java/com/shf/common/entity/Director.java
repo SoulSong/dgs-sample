@@ -1,4 +1,4 @@
-package com.shf.dsg.producer.entity;
+package com.shf.common.entity;
 
 /**
  * description :

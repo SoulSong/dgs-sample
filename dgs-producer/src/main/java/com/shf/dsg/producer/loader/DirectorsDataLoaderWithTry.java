@@ -1,14 +1,12 @@
 package com.shf.dsg.producer.loader;
 
 import com.netflix.graphql.dgs.DgsDataLoader;
-import com.shf.dsg.producer.entity.Director;
+import com.shf.common.entity.Director;
 import com.shf.dsg.producer.service.DirectorService;
 import org.dataloader.BatchLoader;
 import org.dataloader.Try;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;

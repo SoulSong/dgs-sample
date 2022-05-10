@@ -1,6 +1,6 @@
 package com.shf.dsg.producer.service;
 
-import com.shf.dsg.producer.entity.Director;
+import com.shf.common.entity.Director;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 

@@ -1,7 +1,7 @@
 package com.shf.dsg.producer.service;
 
-import com.shf.dsg.producer.entity.Actor;
-import com.shf.dsg.producer.entity.Book;
+import com.shf.common.entity.Actor;
+import com.shf.common.entity.Book;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;

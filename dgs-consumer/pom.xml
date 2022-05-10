@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>dgs-parent</artifactId>
+        <groupId>com.shf.dgs</groupId>
+        <version>1.0-SNAPSHOT</version>
+        <relativePath>../dgs-parent</relativePath>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>dgs-consumer</artifactId>
+    <packaging>jar</packaging>
+
+    <dependencies>
+
+        <!-- dgs-codegen-client -->
+        <dependency>
+            <groupId>com.netflix.graphql.dgs.codegen</groupId>
+            <artifactId>graphql-dgs-codegen-client-core</artifactId>
+            <version>5.1.17</version>
+        </dependency>
+
+    </dependencies>
+
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>2.6.7</version>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.0.0-M5</version>
+            </plugin>
+
+            <!-- https://github.com/deweyjose/graphqlcodegen-example/blob/main/pom.xml -->
+            <plugin>
+                <groupId>io.github.deweyjose</groupId>
+                <artifactId>graphqlcodegen-maven-plugin</artifactId>
+                <version>1.16</version>
+                <!-- 插件配置项定义 https://github.com/deweyjose/graphqlcodegen#options -->
+                <configuration>
+                    <skip>true</skip>
+                    <schemaPaths>
+                        <param>src/main/resources/schema/schema.graphqls</param>
+                    </schemaPaths>
+                    <packageName>com.shf.dgs.generated</packageName>
+                    <generateBoxedTypes>true</generateBoxedTypes>
+                    <generateClient>true</generateClient>
+                    <writeToFiles>true</writeToFiles>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>${project.build.directory}/generated-sources</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

@@ -1,6 +1,6 @@
 package com.shf.dsg.producer.service;
 
-import com.shf.dsg.producer.entity.Review;
+import com.shf.common.entity.Review;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;

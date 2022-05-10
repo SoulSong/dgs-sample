@@ -1,9 +1,9 @@
 package com.shf.dsg.producer.configuration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.shf.dsg.producer.instrumentation.ExampleTracingInstrumentation;
 import graphql.execution.instrumentation.Instrumentation;
-import graphql.execution.instrumentation.tracing.TracingInstrumentation;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -26,18 +26,13 @@ public class BeanConfig {
     @Qualifier("dgsObjectMapper")
     public ObjectMapper dgsObjectMapper() {
         ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE);
+        objectMapper.setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
         return objectMapper;
     }
 
-    /**
-     * 在响应体中将包含tracing相关的信息
-     *
-     * @return {@link Instrumentation}
-     */
     @Bean
     @ConditionalOnProperty(prefix = "graphql.tracing", name = "enabled", matchIfMissing = true)
     public Instrumentation tracingInstrumentation() {
-        return new TracingInstrumentation();
+        return new ExampleTracingInstrumentation();
     }
 }

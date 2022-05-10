@@ -1,0 +1,72 @@
+type Query {
+    list(titleFilter: String): [Book]
+    getById(id:Int):Book
+    actors(book: BookFilter):[Actor]
+    collect(books:[BookFilter]): [Book]
+    book(book: BookFilter):Book
+    hello:String
+    withContext:String
+    loadBook(id:Int):Book
+    listMovies:[Movie]
+    listMoviesWithLocalContext:[Movie2]
+    listMoviesPreload:[Movie3]
+    error:String
+}
+
+type Mutation {
+    addBook(title : String,releaseYear:Int):Book
+    addBook2(input : BookInput):Book
+    addBook3(input : BookInput):Book
+}
+
+type Book {
+    title: String
+    releaseYear: Int
+    actors:[Actor]
+}
+
+type Actor{
+    name: String
+    age: Int
+}
+
+input BookInput{
+    title: String
+    releaseYear: Int
+}
+
+input BookFilter{
+    title: String
+}
+
+type Movie  {
+    name:String
+    director:Director
+}
+
+type Director{
+    id:String
+    name:String
+}
+
+type Movie2  {
+    name:String
+    director:Director
+}
+
+type Movie3  {
+    name:String
+    director:Director
+}
+
+
+# @key(fields:"fieldA fieldB")
+type Post @key(fields: "id") @extends{
+    id:ID @external
+    name:String
+    reviews: [Review]
+}
+
+type Review {
+    starRating: Int
+}
